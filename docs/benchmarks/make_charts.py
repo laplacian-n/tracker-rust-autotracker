@@ -108,6 +108,66 @@ def bar_chart(name, title, subtitle, rows):
     (OUT / f"{name}.svg").write_text("\n".join(o), encoding="utf-8")
 
 
+# per-stage cost per tracked frame, measured during this work (see README for sources):
+# (stage, original technique, original ms, new technique, new ms on the event thread)
+STAGES = [
+    ("Find the match", "Java loop over every position", 896.0,
+     "Rust AVX2 / FFT, all cores, run ahead", 2.0),
+    ("Sub-pixel position", "3-point parabola", 0.3,
+     "Gauss-Newton on bicubic image (AVX2)", 0.8),
+    ("Decode video frame", "FFmpeg, 1 thread, on the UI thread", 7.7,
+     "8-thread decoder running ahead", 0.04),
+    ("Copy frame for display", "per-pixel BGR to RGB copy", 2.0,
+     "decoded image reused, no copy", 0.0),
+    ("Redraw screen + panels", "every frame", 5.9,
+     "about 25 times a second", 1.1),
+    ("Wait for video speed", "up to 42 ms: sleeps to 24 fps if faster (Fast off)", 41.7,
+     "no wait", 0.0),
+]
+
+
+def stage_chart(name):
+    rows = STAGES
+    W = 900
+    L, R, T, RH = 190, 30, 92, 64
+    H = T + RH * len(rows) + 64
+    pw = W - L - R
+    lo, hi = 0.01, 1000.0
+    X = lambda v: L + (math.log10(max(v, lo)) - math.log10(lo)) / (math.log10(hi) - math.log10(lo)) * pw
+    o = [f'<svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 {W} {H}" width="{W}" height="{H}" style="max-width:100%;height:auto" role="img" aria-label="Where the time goes per frame">',
+         CSS, f'<rect width="{W}" height="{H}" fill="var(--surface)"/>',
+         '<text class="t" x="20" y="28">Where the time goes, per tracked frame</text>',
+         '<text x="20" y="48">IMG_4122.mp4 1080×1920 · template ~155 px · search ~180 px · time on the UI thread (log scale)</text>',
+         f'<rect x="20" y="62" width="14" height="4" rx="2" class="bo"/><text x="40" y="68">Original Tracker 6.3.5</text>',
+         f'<rect x="230" y="62" width="14" height="4" rx="2" class="bn"/><text x="250" y="68">This build (Fast ticked)</text>']
+    for t in (0.01, 0.1, 1, 10, 100, 1000):
+        x = X(t)
+        o.append(f'<line class="g" x1="{x:.1f}" x2="{x:.1f}" y1="{T - 6}" y2="{T + RH * len(rows) - 4}"/>')
+        lab = f"{t / 1000:g} s" if t >= 1000 else f"{t:g} ms"
+        o.append(f'<text x="{x:.1f}" y="{T + RH * len(rows) + 12}" text-anchor="middle">{lab}</text>')
+    for i, (stage, ot, ov, nt, nv) in enumerate(rows):
+        y = T + i * RH
+        o.append(f'<text class="lab" x="{L - 12}" y="{y + 22}" text-anchor="end">{escape(stage)}</text>')
+        for j, (cls, tech, v) in enumerate((("bo", ot, ov), ("bn", nt, nv))):
+            yy = y + 4 + j * 26
+            val = "0 (skipped)" if v == 0 else fmt_ms(v)
+            if v > 0:
+                w = X(v) - L
+                o.append(f'<rect class="{cls}" x="{L}" y="{yy}" width="{max(w, 2):.1f}" height="16" rx="4"><title>{escape(tech)}: {val}</title></rect>')
+                tx = L + max(w, 2) + 8
+            else:
+                tx = L + 2
+            label = f"{val} · {tech}"
+            # keep long labels inside the chart: put them inside the bar when the bar is long
+            if v > 0 and tx + 7 * len(label) > W - R:
+                o.append(f'<text x="{L + 8}" y="{yy + 12.5}" style="fill:#fff">{escape(label)}</text>')
+            else:
+                o.append(f'<text x="{tx:.1f}" y="{yy + 12.5}">{escape(label)}</text>')
+    o.append(f'<text class="big" x="20" y="{H - 14}">Whole frame: original ≈ 931 ms (1 fps) → this build ≈ 4.7–5.4 ms (185–213 fps)</text>')
+    o.append('</svg>')
+    (OUT / f"{name}.svg").write_text(chr(10).join(o), encoding="utf-8")
+
+
 def main(path):
     rows = list(csv.DictReader(open(path, encoding="utf-8")))
 
@@ -131,6 +191,7 @@ def main(path):
                     "One frame match on a 1080×1920 frame of IMG_4122.mp4 · median · i5-13450HX",
                     "template side (px, log scale)", xs, old, new)
     charts.append(("template_s181", xs, old, new, "template side", sp))
+    stage_chart("stages")
     bar_chart("whole_clip", "Autotracking the whole clip (721 frames)",
               "IMG_4122.mp4 · template 154×152 · search ~180×180 · Evolve 20% · original: 931 ms/frame measured on 40 frames, × 721",
               [("Original Tracker 6.3.5", 721 * 0.93113, "bo"), ("This build (Fast ticked)", 3.83, "bn")])
@@ -142,7 +203,8 @@ def main(path):
             "<h1>Tracker-Rust: speed vs original Tracker</h1>",
             "<p>Hover a point for its value. Whole clip: original measured on 40 frames (931 ms/frame) "
             "and scaled to 721; this build measured over the whole clip.</p>",
-            (OUT / "whole_clip.svg").read_text(encoding="utf-8")]
+            (OUT / "whole_clip.svg").read_text(encoding="utf-8"),
+            (OUT / "stages.svg").read_text(encoding="utf-8")]
     for name, xs, old, new, xl, _ in charts:
         html.append((OUT / f"{name}.svg").read_text(encoding="utf-8"))
         html.append(f"<table><tr><th>{xl} (px)</th><th>original</th><th>this build</th><th>faster</th></tr>")

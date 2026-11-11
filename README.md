@@ -14,6 +14,37 @@ On IMG_4122.mp4 (1080×1920 H.264, template ~155×155 px, search ~180×180 px, E
 20%, Look-Ahead, Fast): stock Tracker needs about a second per frame; this build
 tracks at **~185 frames per second**.
 
+## Demo
+
+Same video, same template and settings, about 5 seconds of screen recording each:
+
+| Original Tracker 6.3.5 (Fast off) | This build (Fast ticked) |
+|---|---|
+| ![original](docs/media/track_old.gif) | ![this build](docs/media/track_new.gif) |
+| frame 2 → 4 | frame 1 → 320 |
+| [full-size video](docs/media/track_old.mp4) | [full-size video](docs/media/track_new.mp4) |
+
+## What is faster, and how
+
+![Where the time goes per frame](docs/benchmarks/stages.svg)
+
+Per tracked frame (1080×1920 video, template ~155 px, search area ~180 px), time on
+Tracker's UI thread:
+
+| Step | Original Tracker 6.3.5 | | This build | |
+|---|---|---:|---|---:|
+| Find the match | Java loop over every search position | 896 ms | Rust: AVX2 integer kernel or exact FFT, all cores; next frame matched ahead on a background thread | ~2 ms |
+| Sub-pixel position | 3-point parabola | ~0.3 ms | Gauss-Newton on a bicubic-interpolated image (AVX2), more accurate | ~0.8 ms |
+| Decode the video frame | FFmpeg, 1 thread, on the UI thread | 7.7 ms | 8-thread decoder running up to 8 frames ahead | ~0.04 ms |
+| Copy frame for display | per-pixel BGR→RGB copy of the whole frame | 2.0 ms | decoded image used directly | 0 |
+| Redraw screen + panels | every frame | 5.9 ms | ~25 times a second | ~1.1 ms |
+| Wait for video speed | sleeps to the video's frame rate when faster (Fast off) | up to 42 ms | no wait | 0 |
+| **Whole frame** | | **≈ 931 ms (1 fps)** | | **≈ 4.7–5.4 ms (185–213 fps)** |
+
+Sources: matcher and decode timings from the per-frame log
+(`%TEMP%\tracker-native-perf.log`, `FastPaint` breakdown) and the `autotest.ps1` runs;
+"original" decode/copy/redraw costs are Tracker's own code measured before each change.
+
 ## Run
 
 Needs Windows x64 and Tracker 6.3.5 installed in `C:\Program Files\Tracker` (its Java

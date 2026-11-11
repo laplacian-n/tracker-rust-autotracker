@@ -9,6 +9,7 @@ tracker-native/*.dll
 # videos and Tracker projects (personal data)
 videos/
 *.mp4
+!docs/media/*.mp4
 *.mov
 *.avi
 *.trz
