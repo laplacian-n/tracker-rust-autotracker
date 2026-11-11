@@ -33,6 +33,7 @@
 
 use jni_sys::*;
 mod filedialog;
+pub mod checker;
 use rayon::prelude::*;
 use std::ptr::null_mut;
 
@@ -1362,4 +1363,43 @@ pub fn bench_run(mode: i32, target: &[i32], w_test: usize, tr: &[i32], tg: &[i32
 pub fn bench_refine(target: &[i32], w_test: usize, tr: &[i32], tg: &[i32], tb: &[i32], transp: &[u8],
                     wt: usize, ht: usize, xm: i32, ym: i32) -> Option<(f64, f64)> {
     refine(target, w_test, tr, tg, tb, transp, wt, ht, xm, ym, (0.3, -0.2), None)
+}
+
+/// `static native int findCheckerboard(int[] rgb, int w, int h, double[] out)`
+///
+/// rgb: 0xRRGGBB pixels, row-major. out receives {i, j, x, y} per inner corner
+/// (x, y in pixel-centre coordinates); returns the number of corners written.
+#[unsafe(no_mangle)]
+pub unsafe extern "system" fn Java_org_opensourcephysics_media_core_NativeMatcher_findCheckerboard(
+    env: *mut JNIEnv, _cls: jclass, rgb: jintArray, w: jint, h: jint, out: jdoubleArray,
+) -> jint {
+    unsafe {
+        let (w, h) = (w.max(0) as usize, h.max(0) as usize);
+        let n = length(env, rgb);
+        let cap = length(env, out) / 4;
+        if n < w * h || w == 0 || h == 0 {
+            return 0;
+        }
+        let gray: Vec<f32> = {
+            let p = pin(env, rgb, n);
+            let px = std::slice::from_raw_parts(p.ptr as *const i32, n);
+            let g = px[..w * h]
+                .iter()
+                .map(|&c| {
+                    let (r, gg, b) = ((c >> 16) & 255, (c >> 8) & 255, c & 255);
+                    0.299 * r as f32 + 0.587 * gg as f32 + 0.114 * b as f32
+                })
+                .collect();
+            unpin(env, &p);
+            g
+        };
+        let corners = checker::find(&gray, w, h);
+        let m = corners.len().min(cap);
+        let mut buf = Vec::with_capacity(m * 4);
+        for c in &corners[..m] {
+            buf.extend_from_slice(&[c.i as f64, c.j as f64, c.x, c.y]);
+        }
+        ((**env).SetDoubleArrayRegion.unwrap())(env, out, 0, buf.len() as jsize, buf.as_ptr());
+        m as jint
+    }
 }

@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 841.89 595.28] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1144 >>
+stream
+0 g
+80.787 102.047 85.039 85.039 re f
+250.866 102.047 85.039 85.039 re f
+420.945 102.047 85.039 85.039 re f
+591.024 102.047 85.039 85.039 re f
+165.827 187.087 85.039 85.039 re f
+335.906 187.087 85.039 85.039 re f
+505.984 187.087 85.039 85.039 re f
+676.063 187.087 85.039 85.039 re f
+80.787 272.126 85.039 85.039 re f
+250.866 272.126 85.039 85.039 re f
+420.945 272.126 85.039 85.039 re f
+591.024 272.126 85.039 85.039 re f
+165.827 357.165 85.039 85.039 re f
+335.906 357.165 85.039 85.039 re f
+505.984 357.165 85.039 85.039 re f
+676.063 357.165 85.039 85.039 re f
+80.787 442.205 85.039 85.039 re f
+250.866 442.205 85.039 85.039 re f
+420.945 442.205 85.039 85.039 re f
+591.024 442.205 85.039 85.039 re f
+0.6 w 279.213 76.535 m 562.677 76.535 l S
+279.213 70.866 m 279.213 82.205 l S
+562.677 70.866 m 562.677 82.205 l S
+BT /F1 9 Tf 571.18 73.13 Td (100 mm) Tj ET
+BT /F1 9 Tf 80.79 53.86 Td (Squares 30 mm \(7 x 4 inner corners\). Print at Actual size / 100 %, check the line is 100 mm, keep the white margin.) Tj ET
+BT /F1 9 Tf 80.79 39.69 Td (Tracker-Rust: Coordinate System > Calibrate from Pattern. Lay it flat in the plane of the motion.) Tj ET
+
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000247 00000 n 
+0000001443 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1513
+%%EOF

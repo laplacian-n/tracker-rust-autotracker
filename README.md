@@ -133,6 +133,42 @@ ready to Search. With the same camera position, **Video → Import** (or droppin
 video on the tab) keeps the axes and rebuilds the template from the new video at the
 same place. Stock Tracker ignores the extra `autotracker_keyframes` property.
 
+### Calibrating from a printed checkerboard
+
+Instead of clicking a calibration stick on a zoomed, pixelated frame:
+
+1. Print a board from [`docs/calibration`](docs/calibration) (A4: 15, 20 or 30 mm squares)
+   at *Actual size / 100 %* and check the 100 mm line with a ruler.
+2. Lay it flat in the plane of the motion and film it for a moment at the start
+   (camera not moving afterwards).
+3. On a frame where the whole board is visible: **Coordinate System → Calibrate from
+   Pattern...**, enter the square size.
+
+All inner corners are found to about 0.05 px (`tmnative/src/checker.rs`: saddle points
+at several blur scales, grid growing with checker-polarity checks, gradient-based
+sub-pixel refinement; works from about 8 px per square). From them
+(`media/core/PatternGeometry.java`):
+
+- the plane-to-image homography, the camera focal length and so the **tilt of the
+  board from square-on** (and which side is farther), and the camera distance;
+- the **true scale at the board centre** along x and y, and how much it changes across
+  the board;
+- the error left by one scale for the whole image.
+
+Then either scale + origin + axes only (board close to square-on), or **with perspective
+correction**: a Perspective filter is added that turns the board's plane square-on,
+and the scale is exact everywhere in that plane. On rendered frames with a known
+camera (`java/bench/PatternCheck`, `PatternApplyCheck`): tilt and focal length within
+0.5 %, centre scale to 4 digits; world positions on the board within 0.04 mm (20 mm
+squares) with correction at 3–35° tilt, against 0.3–14 mm with one scale.
+
+Valid for motion in the board's plane only (as with any calibration). The coordinate
+change can be undone with Edit → Undo; the filter is removed in Video → Filters.
+
+The Perspective filter's bilinear interpolation is also fixed: stock Tracker 6.3.5 mixes
+up the right and lower neighbour pixels (`PerspectiveFilter.getColor`), which shifts
+corrected images by up to half a pixel.
+
 ## Build
 
 Requirements: Rust (stable, `x86_64-pc-windows-gnu` or `-msvc`), JDK 17+ (looked for in
@@ -228,6 +264,8 @@ with an evolving template, 299 frames).
 - `java/bench` — `Bench`, `AccBench`, `DecodeBench`, `PrefetchCheck`, `SpecCheck`
 - `java/src/javajs/async` — `AsyncFileChooser` (patched) and `NativeChooser`: the Windows file dialog;
   `tmnative/src/filedialog.rs` is its native side
+- `tmnative/src/checker.rs`, `media/core/PatternGeometry`, `cabrillo/tracker/PatternCalibration` (and the
+  menu item in `TMenuBar`) — calibration from a printed checkerboard; `docs/calibration` — printable boards
 - `installer/` — launcher, setup and uninstaller (C#), `build-installer.ps1`
 
 ## License and credits

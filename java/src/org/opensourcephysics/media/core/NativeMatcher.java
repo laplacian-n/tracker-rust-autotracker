@@ -103,6 +103,13 @@ public class NativeMatcher {
 	public static native String[] fileDialog(int flags, String title, String okLabel, String folder,
 			String fileName, String[] filterNames, String[] filterSpecs, int filterIndex);
 
+	/**
+	 * Finds a printed checkerboard's inner corners in an image (0xRRGGBB pixels).
+	 * out gets {i, j, x, y} per corner (grid index, pixel-centre position);
+	 * returns the number of corners.
+	 */
+	public static native int findCheckerboard(int[] rgb, int w, int h, double[] out);
+
 	static native void search(int[] target, int wTest, int[] tR, int[] tG, int[] tB,
 			boolean[] transparent, int wTemplate, int hTemplate, int[] pts, int sw, int sh,
 			int mode, double[] out);
