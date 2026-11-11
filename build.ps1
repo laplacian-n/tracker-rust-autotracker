@@ -25,6 +25,8 @@ if (-not (Test-Path java\lib\tracker.jar)) {
 
 # 1. Rust kernel; the target dir must have an ASCII path for the linker
 $env:CARGO_TARGET_DIR = Join-Path $env:TEMP 'tmnative-target'
+# keep local paths (user profile, cargo registry, toolchain) out of the DLL's panic messages
+$env:RUSTFLAGS = "--remap-path-prefix=$($env:USERPROFILE)=~"
 Push-Location tmnative
 cargo build --release
 if ($LASTEXITCODE) { throw 'cargo build failed' }
