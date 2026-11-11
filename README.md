@@ -24,6 +24,39 @@ Same video, same template and settings, about 5 seconds of screen recording each
 | frame 2 → 4 | frame 1 → 320 |
 | [full-size video](docs/media/track_old.mp4) | [full-size video](docs/media/track_new.mp4) |
 
+## Benchmarks (i5-13450HX, 16 threads)
+
+Charts from `docs/benchmarks` (data: `sweep.csv` from `java/bench/.../SweepBench.java`,
+best of two runs; regenerate with `python docs/benchmarks/make_charts.py docs/benchmarks/sweep.csv`;
+`index.html` has hover values and the tables):
+
+![Whole clip](docs/benchmarks/whole_clip.svg)
+![Search area vs speed, template 161](docs/benchmarks/search_t161.svg)
+![Search area vs speed, template 41](docs/benchmarks/search_t41.svg)
+![Template size vs speed](docs/benchmarks/template_s181.svg)
+
+`java\bench\Bench.java`, synthetic 1280×720, median µs per match:
+
+| template / search | Java (stock) | first Rust | now |
+|---|---:|---:|---:|
+| 21 / 41 | 879 | 105 | 50 |
+| 41 / 101 | 19 155 | 489 | ~330–500 |
+| 61 / 201 | 172 644 | 2 316 | ~1 170 |
+| 81 / 401 | 1 252 131 | 14 583 | ~2 400–2 600 |
+
+Kernel only (`cargo run --release --example kbench`, set `CARGO_TARGET_DIR` to an
+ASCII path; `KB_MODES` / `KB_SCENES` select modes and sizes), 161/185: Java port
+1 190 ms, madd all cores ~7 ms, FFT ~2.4 ms, auto ~1.5–2.5 ms.
+
+`java\bench\AccBench.java`, analytically rendered frames with known sub-pixel truth,
+RMS error in pixels (parabola → refine):
+
+| case | stock | refine |
+|---|---:|---:|
+| ball fills template, tpl 15 / 21 / 41 | 0.033 / 0.030 / 0.025 | 0.011 / 0.010 / 0.008 |
+| ball + static background ring, tpl 15 / 21 | 0.057 / 0.043 | 0.031 / 0.031 |
+| line search (1D), tpl 21, noise σ=3 | 0.230 | 0.022 |
+
 ## What is faster, and how
 
 ![Where the time goes per frame](docs/benchmarks/stages.svg)
@@ -178,39 +211,6 @@ Checks: `kbench` compares every mode with the straight Java port; `Bench` signat
 `PrefetchCheck` (frame CRCs through `VideoAdapter.getImage`, prefetch on vs off, 616
 requests incl. jumps and steps back); `SpecCheck` (speculative vs on-the-spot matches
 with an evolving template, 299 frames).
-
-## Benchmarks (i5-13450HX, 16 threads)
-
-Charts from `docs/benchmarks` (data: `sweep.csv` from `java/bench/.../SweepBench.java`,
-best of two runs; regenerate with `python docs/benchmarks/make_charts.py docs/benchmarks/sweep.csv`;
-`index.html` has hover values and the tables):
-
-![Whole clip](docs/benchmarks/whole_clip.svg)
-![Search area vs speed, template 161](docs/benchmarks/search_t161.svg)
-![Search area vs speed, template 41](docs/benchmarks/search_t41.svg)
-![Template size vs speed](docs/benchmarks/template_s181.svg)
-
-`java\bench\Bench.java`, synthetic 1280×720, median µs per match:
-
-| template / search | Java (stock) | first Rust | now |
-|---|---:|---:|---:|
-| 21 / 41 | 879 | 105 | 50 |
-| 41 / 101 | 19 155 | 489 | ~330–500 |
-| 61 / 201 | 172 644 | 2 316 | ~1 170 |
-| 81 / 401 | 1 252 131 | 14 583 | ~2 400–2 600 |
-
-Kernel only (`cargo run --release --example kbench`, set `CARGO_TARGET_DIR` to an
-ASCII path; `KB_MODES` / `KB_SCENES` select modes and sizes), 161/185: Java port
-1 190 ms, madd all cores ~7 ms, FFT ~2.4 ms, auto ~1.5–2.5 ms.
-
-`java\bench\AccBench.java`, analytically rendered frames with known sub-pixel truth,
-RMS error in pixels (parabola → refine):
-
-| case | stock | refine |
-|---|---:|---:|
-| ball fills template, tpl 15 / 21 / 41 | 0.033 / 0.030 / 0.025 | 0.011 / 0.010 / 0.008 |
-| ball + static background ring, tpl 15 / 21 | 0.057 / 0.043 | 0.031 / 0.031 |
-| line search (1D), tpl 21, noise σ=3 | 0.230 | 0.022 |
 
 ## Files
 
