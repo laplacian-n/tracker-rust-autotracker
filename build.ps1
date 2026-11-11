@@ -36,6 +36,8 @@ $dll = Join-Path $env:CARGO_TARGET_DIR 'release\tmnative.dll'
 # 2. patched classes, compiled against the stock tracker.jar
 Push-Location java
 $xuggle = 'C:\Program Files\Tracker\Xuggle\xuggle-xuggler-server-all.jar'
+# or the copy kept for the installer (relative: the repository path may not be ASCII)
+if (-not (Test-Path $xuggle)) { $xuggle = '..\installer\runtime\Xuggle\xuggle-xuggler-server-all.jar' }
 # every source under java\src (relative paths: javac cannot open the Thai folder name)
 $root = (Resolve-Path src).Path
 $sources = Get-ChildItem src -Recurse -Filter *.java | ForEach-Object { 'src' + $_.FullName.Substring($root.Length) }

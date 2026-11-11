@@ -49,9 +49,20 @@ Sources: matcher and decode timings from the per-frame log
 
 ## Run
 
-Needs Windows x64 and Tracker 6.3.5 installed in `C:\Program Files\Tracker` (its Java
-runtime and Xuggle are used). Build (below) or put a release's `tracker-native.jar` and
-`tmnative.dll` next to `tracker-native\Tracker-Rust.bat`, then double-click the .bat.
+**Install:** download `Tracker-Rust-Setup-<version>.exe` from
+[Releases](https://github.com/laplacian-n/tracker-rust-autotracker/releases/latest) and
+double-click it. It contains everything (Java runtime and Xuggle from Tracker 6.3.5),
+installs for the current user without administrator rights, adds Start menu / desktop
+shortcuts and (optionally) opens `.trk`/`.trz` files. The original Tracker is not needed
+and, if installed, is not changed. Remove it from Settings → Apps. Silent install:
+`Tracker-Rust-Setup-<version>.exe /S [/D=folder] [/desktop]`.
+
+The install folder must have an English-only path (Java cannot start from e.g. a Thai
+folder name); with a non-English user name the default is `C:\Users\Public\Tracker-Rust`.
+Videos and Tracker files can be anywhere.
+
+From a build (below): with Tracker 6.3.5 in `C:\Program Files\Tracker`, double-click
+`tracker-native\Tracker-Rust.bat`.
 
 - The Autotracker's **Fast** checkbox is the switch between this build and stock
   Tracker (`media.core.Patch.ON`):
@@ -67,7 +78,9 @@ runtime and Xuggle are used). Build (below) or put a release's `tracker-native.j
   relaunches itself back to 1 GB. Override: `set TRACKER_MEMORY_MB=4096` before starting.
 - Works from folders with Thai names (e.g. เอกสาร): the jar is given by a relative path
   and the DLL is loaded from an ASCII copy in `%TEMP%\tracker-native` when needed.
-  Open files with File → Open (a Thai path passed on the command line arrives as "?").
+  With the .bat, open files with File → Open (a Thai path passed on the command line
+  arrives as "?"); the installed `Tracker-Rust.exe` passes the short (8.3) path instead,
+  so double-clicking a .trz in a Thai folder works.
 - Per-frame timing goes to `%TEMP%\tracker-native-perf.log` (fps, matcher time, how
   many frames used the ahead-of-time match, and a breakdown every 300 Fast frames).
 
@@ -95,6 +108,17 @@ Refuses to run while Tracker-Rust is open. Builds `tmnative.dll` (cargo, target 
 `%TEMP%\tmnative-target` because the MinGW linker cannot write Thai paths), compiles
 everything in `java\src` against `java\lib\tracker.jar` + Xuggle into `java\patched`,
 and makes `tracker-native\tracker-native.jar` = tracker.jar + the patched classes.
+
+Installer:
+
+```
+powershell -ExecutionPolicy Bypass -File installer\build-installer.ps1 -Version 1.1.0
+```
+
+Copies the OpenJDK runtime and Xuggle from the installed Tracker into `installer\runtime`
+(first time only), compiles `Tracker-Rust.exe` (launcher), `Uninstall.exe` and the setup
+with the C# compiler that comes with Windows (.NET Framework 4), and embeds everything as
+one zip in `installer\build\Tracker-Rust-Setup-<version>.exe`.
 
 ## Unattended benchmark
 
@@ -195,6 +219,7 @@ RMS error in pixels (parabola → refine):
   `NativeMatcher`, `media/xuggle/XuggleVideo`, `cabrillo/tracker/AutoTracker`, `TrackerPanel`, `FastPaint`
 - `src_orig/` — stock Tracker 6.3.5 sources (from the `version_6.3.5` tag), for reference
 - `java/bench` — `Bench`, `AccBench`, `DecodeBench`, `PrefetchCheck`, `SpecCheck`
+- `installer/` — launcher, setup and uninstaller (C#), `build-installer.ps1`
 
 ## License and credits
 
@@ -206,4 +231,7 @@ the [`version_6.3.5` tag](https://github.com/OpenSourcePhysics/tracker/tree/vers
 for comparison. This project as a whole, including the Rust kernel, is distributed under
 the **GNU General Public License v3.0 or later** — see [LICENSE](LICENSE).
 
-Xuggle/FFmpeg are not included; the build uses the copies installed with Tracker.
+The repository does not contain Xuggle/FFmpeg or Java. The installer bundles the copies
+shipped with Tracker 6.3.5: the OpenJDK 21.0.5 runtime (GPL v2 with Classpath Exception,
+notices in `jre\legal`) and Xuggle (GPL/LGPL, source at
+[artclarke/xuggle-xuggler](https://github.com/artclarke/xuggle-xuggler)).

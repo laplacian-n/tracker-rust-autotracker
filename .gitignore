@@ -19,3 +19,5 @@ videos/
 *.log
 patch.py
 docs/benchmarks/__pycache__/
+installer/runtime/
+installer/build/
