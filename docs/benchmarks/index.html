@@ -1,18 +1,21 @@
 <!doctype html><meta charset='utf-8'><title>Tracker-Rust speed</title>
-<style>body{font-family:'Segoe UI',system-ui,sans-serif;max-width:800px;margin:24px auto;padding:0 12px;}table{border-collapse:collapse;margin:8px 0 28px}td,th{padding:3px 10px;text-align:right;border-bottom:1px solid #ddd}@media (prefers-color-scheme: dark){body{background:#1a1a19;color:#f0efec}td,th{border-color:#33332f}}</style>
+<style>body{font-family:'Segoe UI',system-ui,sans-serif;max-width:800px;margin:24px auto;padding:0 12px;}table{border-collapse:collapse;margin:8px 0 28px}td,th{padding:3px 10px;text-align:right;border-bottom:1px solid #ddd}@media (prefers-color-scheme: dark){body{background:#0d1117;color:#f0f6fc}td,th{border-color:#262c36}}</style>
 <h1>Tracker-Rust: speed vs original Tracker</h1>
 <p>Hover a point for its value. Whole clip: original measured on 40 frames (931 ms/frame) and scaled to 721; this build measured over the whole clip.</p>
 <svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 760 196" width="760" height="196" style="max-width:100%;height:auto" role="img" aria-label="Autotracking the whole clip (721 frames)">
 
 <style>
-.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+.s { --surface:#ffffff; --ink:#1f2328; --ink2:#59636e; --grid:#d8dee4;
+     --new:#0969da; --old:#8c959f; --on-old:#1f2328; }
 @media (prefers-color-scheme: dark) {
-  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+  .s { --surface:#0d1117; --ink:#f0f6fc; --ink2:#9198a1; --grid:#262c36;
+       --new:#4493f8; --old:#656c76; --on-old:#ffffff; }
 }
 .s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
 .s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
 .s .lab { fill: var(--ink); font-size: 12px; }
 .s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .in { fill: var(--on-old); }
 .s .g { stroke: var(--grid); stroke-width: 1; }
 .s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
@@ -21,7 +24,6 @@
 .s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
 </style>
 
-<rect width="760" height="196" fill="var(--surface)"/>
 <text class="t" x="20" y="28">Autotracking the whole clip (721 frames)</text>
 <text x="20" y="48">IMG_4122.mp4 · template 154×152 · search ~180×180 · Evolve 20% · original: 931 ms/frame measured on 40 frames, × 721</text>
 <text class="lab" x="198" y="96" text-anchor="end">Original Tracker 6.3.5</text>
@@ -35,14 +37,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 900 540" width="900" height="540" style="max-width:100%;height:auto" role="img" aria-label="Where the time goes per frame">
 
 <style>
-.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+.s { --surface:#ffffff; --ink:#1f2328; --ink2:#59636e; --grid:#d8dee4;
+     --new:#0969da; --old:#8c959f; --on-old:#1f2328; }
 @media (prefers-color-scheme: dark) {
-  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+  .s { --surface:#0d1117; --ink:#f0f6fc; --ink2:#9198a1; --grid:#262c36;
+       --new:#4493f8; --old:#656c76; --on-old:#ffffff; }
 }
 .s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
 .s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
 .s .lab { fill: var(--ink); font-size: 12px; }
 .s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .in { fill: var(--on-old); }
 .s .g { stroke: var(--grid); stroke-width: 1; }
 .s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
@@ -51,7 +56,6 @@
 .s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
 </style>
 
-<rect width="900" height="540" fill="var(--surface)"/>
 <text class="t" x="20" y="28">Where the time goes, per tracked frame</text>
 <text x="20" y="48">IMG_4122.mp4 1080×1920 · template ~155 px · search ~180 px · time on the UI thread (log scale)</text>
 <rect x="20" y="62" width="14" height="4" rx="2" class="bo"/><text x="40" y="68">Original Tracker 6.3.5</text>
@@ -70,7 +74,7 @@
 <text x="870.0" y="488" text-anchor="middle">1 s</text>
 <text class="lab" x="178" y="114" text-anchor="end">Find the match</text>
 <rect class="bo" x="190" y="96" width="673.5" height="16" rx="4"><title>Java loop over every position: 896 ms</title></rect>
-<text x="198" y="108.5" style="fill:#fff">896 ms · Java loop over every position</text>
+<text x="198" y="108.5" class="in">896 ms · Java loop over every position</text>
 <rect class="bn" x="190" y="122" width="312.9" height="16" rx="4"><title>Rust AVX2 / FFT, all cores, run ahead: 2.0 ms</title></rect>
 <text x="510.9" y="134.5">2.0 ms · Rust AVX2 / FFT, all cores, run ahead</text>
 <text class="lab" x="178" y="178" text-anchor="end">Sub-pixel position</text>
@@ -79,7 +83,7 @@
 <text x="192.0" y="198.5">≈0 · Gauss-Newton, more accurate: 0.8 ms on the background thread</text>
 <text class="lab" x="178" y="242" text-anchor="end">Decode video frame</text>
 <rect class="bo" x="190" y="224" width="392.6" height="16" rx="4"><title>FFmpeg, 1 thread, on the UI thread: 7.7 ms</title></rect>
-<text x="198" y="236.5" style="fill:#fff">7.7 ms · FFmpeg, 1 thread, on the UI thread</text>
+<text x="198" y="236.5" class="in">7.7 ms · FFmpeg, 1 thread, on the UI thread</text>
 <rect class="bn" x="190" y="250" width="81.9" height="16" rx="4"><title>8-thread decoder running ahead: 0.04 ms</title></rect>
 <text x="279.9" y="262.5">0.04 ms · 8-thread decoder running ahead</text>
 <text class="lab" x="178" y="306" text-anchor="end">Copy frame for display</text>
@@ -93,21 +97,24 @@
 <text x="475.6" y="390.5">1.1 ms · about 25 times a second</text>
 <text class="lab" x="178" y="434" text-anchor="end">Wait for video speed</text>
 <rect class="bo" x="190" y="416" width="492.3" height="16" rx="4"><title>up to 42 ms: sleeps to 24 fps if faster (Fast off): 42 ms</title></rect>
-<text x="198" y="428.5" style="fill:#fff">42 ms · up to 42 ms: sleeps to 24 fps if faster (Fast off)</text>
+<text x="198" y="428.5" class="in">42 ms · up to 42 ms: sleeps to 24 fps if faster (Fast off)</text>
 <text x="192.0" y="454.5">0 (skipped) · no wait</text>
 <text class="big" x="20" y="526">Whole frame: original ≈ 931 ms (1 fps) → this build ≈ 4.7–5.4 ms (185–213 fps)</text>
 </svg>
 <svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 760 430" width="760" height="430" style="max-width:100%;height:auto" role="img" aria-label="Search area vs speed (template 161×161 px)">
 
 <style>
-.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+.s { --surface:#ffffff; --ink:#1f2328; --ink2:#59636e; --grid:#d8dee4;
+     --new:#0969da; --old:#8c959f; --on-old:#1f2328; }
 @media (prefers-color-scheme: dark) {
-  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+  .s { --surface:#0d1117; --ink:#f0f6fc; --ink2:#9198a1; --grid:#262c36;
+       --new:#4493f8; --old:#656c76; --on-old:#ffffff; }
 }
 .s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
 .s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
 .s .lab { fill: var(--ink); font-size: 12px; }
 .s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .in { fill: var(--on-old); }
 .s .g { stroke: var(--grid); stroke-width: 1; }
 .s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
@@ -116,7 +123,6 @@
 .s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
 </style>
 
-<rect width="760" height="430" fill="var(--surface)"/>
 <text class="t" x="74" y="28">Search area vs speed (template 161×161 px)</text>
 <text x="74" y="48">One frame match on a 1080×1920 frame of IMG_4122.mp4 · median · i5-13450HX</text>
 <rect x="74" y="62" width="14" height="4" rx="2" class="bo"/><text x="94" y="68">Original Tracker 6.3.5 (Java)</text>
@@ -178,14 +184,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 760 430" width="760" height="430" style="max-width:100%;height:auto" role="img" aria-label="Search area vs speed (template 41×41 px)">
 
 <style>
-.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+.s { --surface:#ffffff; --ink:#1f2328; --ink2:#59636e; --grid:#d8dee4;
+     --new:#0969da; --old:#8c959f; --on-old:#1f2328; }
 @media (prefers-color-scheme: dark) {
-  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+  .s { --surface:#0d1117; --ink:#f0f6fc; --ink2:#9198a1; --grid:#262c36;
+       --new:#4493f8; --old:#656c76; --on-old:#ffffff; }
 }
 .s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
 .s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
 .s .lab { fill: var(--ink); font-size: 12px; }
 .s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .in { fill: var(--on-old); }
 .s .g { stroke: var(--grid); stroke-width: 1; }
 .s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
@@ -194,7 +203,6 @@
 .s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
 </style>
 
-<rect width="760" height="430" fill="var(--surface)"/>
 <text class="t" x="74" y="28">Search area vs speed (template 41×41 px)</text>
 <text x="74" y="48">One frame match on a 1080×1920 frame of IMG_4122.mp4 · median · i5-13450HX</text>
 <rect x="74" y="62" width="14" height="4" rx="2" class="bo"/><text x="94" y="68">Original Tracker 6.3.5 (Java)</text>
@@ -254,14 +262,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 760 430" width="760" height="430" style="max-width:100%;height:auto" role="img" aria-label="Template size vs speed (search area 181×181 px)">
 
 <style>
-.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+.s { --surface:#ffffff; --ink:#1f2328; --ink2:#59636e; --grid:#d8dee4;
+     --new:#0969da; --old:#8c959f; --on-old:#1f2328; }
 @media (prefers-color-scheme: dark) {
-  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+  .s { --surface:#0d1117; --ink:#f0f6fc; --ink2:#9198a1; --grid:#262c36;
+       --new:#4493f8; --old:#656c76; --on-old:#ffffff; }
 }
 .s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
 .s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
 .s .lab { fill: var(--ink); font-size: 12px; }
 .s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .in { fill: var(--on-old); }
 .s .g { stroke: var(--grid); stroke-width: 1; }
 .s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
@@ -270,7 +281,6 @@
 .s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
 </style>
 
-<rect width="760" height="430" fill="var(--surface)"/>
 <text class="t" x="74" y="28">Template size vs speed (search area 181×181 px)</text>
 <text x="74" y="48">One frame match on a 1080×1920 frame of IMG_4122.mp4 · median · i5-13450HX</text>
 <rect x="74" y="62" width="14" height="4" rx="2" class="bo"/><text x="94" y="68">Original Tracker 6.3.5 (Java)</text>

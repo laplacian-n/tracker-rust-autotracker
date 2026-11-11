@@ -13,17 +13,22 @@ from pathlib import Path
 
 OUT = Path(__file__).parent
 
-# validated two-slot palette (dataviz reference palette, slots 1-2), light / dark
+# Transparent background and GitHub's own light / dark neutrals, so the charts sit
+# on the README page like part of it. The original is the grey baseline, this
+# build the accent blue.
 CSS = """
 <style>
-.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+.s { --surface:#ffffff; --ink:#1f2328; --ink2:#59636e; --grid:#d8dee4;
+     --new:#0969da; --old:#8c959f; --on-old:#1f2328; }
 @media (prefers-color-scheme: dark) {
-  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+  .s { --surface:#0d1117; --ink:#f0f6fc; --ink2:#9198a1; --grid:#262c36;
+       --new:#4493f8; --old:#656c76; --on-old:#ffffff; }
 }
 .s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
 .s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
 .s .lab { fill: var(--ink); font-size: 12px; }
 .s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .in { fill: var(--on-old); }
 .s .g { stroke: var(--grid); stroke-width: 1; }
 .s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
@@ -55,7 +60,7 @@ def line_chart(name, title, subtitle, xlabel, xs, old, new):
     X = lambda x: L + (math.log10(x) - x0) / (x1 - x0) * pw
     Y = lambda v: T + ph - (math.log10(v) - math.log10(lo)) / (math.log10(hi) - math.log10(lo)) * ph
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 {W} {H}" width="{W}" height="{H}" style="max-width:100%;height:auto" role="img" aria-label="{escape(title)}">',
-         CSS, f'<rect width="{W}" height="{H}" fill="var(--surface)"/>',
+         CSS,
          f'<text class="t" x="{L}" y="28">{escape(title)}</text>',
          f'<text x="{L}" y="48">{escape(subtitle)}</text>']
     # legend row
@@ -94,7 +99,7 @@ def bar_chart(name, title, subtitle, rows):
     pw = W - L - R
     mx = max(v for _, v, _ in rows)
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 {W} {H}" width="{W}" height="{H}" style="max-width:100%;height:auto" role="img" aria-label="{escape(title)}">',
-         CSS, f'<rect width="{W}" height="{H}" fill="var(--surface)"/>',
+         CSS,
          f'<text class="t" x="20" y="28">{escape(title)}</text>', f'<text x="20" y="48">{escape(subtitle)}</text>']
     for i, (lab, v, cls) in enumerate(rows):
         y = T + i * 56
@@ -135,7 +140,7 @@ def stage_chart(name):
     lo, hi = 0.01, 1000.0
     X = lambda v: L + (math.log10(max(v, lo)) - math.log10(lo)) / (math.log10(hi) - math.log10(lo)) * pw
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 {W} {H}" width="{W}" height="{H}" style="max-width:100%;height:auto" role="img" aria-label="Where the time goes per frame">',
-         CSS, f'<rect width="{W}" height="{H}" fill="var(--surface)"/>',
+         CSS,
          '<text class="t" x="20" y="28">Where the time goes, per tracked frame</text>',
          '<text x="20" y="48">IMG_4122.mp4 1080×1920 · template ~155 px · search ~180 px · time on the UI thread (log scale)</text>',
          f'<rect x="20" y="62" width="14" height="4" rx="2" class="bo"/><text x="40" y="68">Original Tracker 6.3.5</text>',
@@ -160,7 +165,7 @@ def stage_chart(name):
             label = f"{val} · {tech}"
             # keep long labels inside the chart: put them inside the bar when the bar is long
             if v > 0 and tx + 7 * len(label) > W - R:
-                o.append(f'<text x="{L + 8}" y="{yy + 12.5}" style="fill:#fff">{escape(label)}</text>')
+                o.append(f'<text x="{L + 8}" y="{yy + 12.5}" class="in">{escape(label)}</text>')
             else:
                 o.append(f'<text x="{tx:.1f}" y="{yy + 12.5}">{escape(label)}</text>')
     o.append(f'<text class="big" x="20" y="{H - 14}">Whole frame: original ≈ 931 ms (1 fps) → this build ≈ 4.7–5.4 ms (185–213 fps)</text>')
@@ -199,7 +204,7 @@ def main(path):
     html = ["<!doctype html><meta charset='utf-8'><title>Tracker-Rust speed</title>",
             "<style>body{font-family:'Segoe UI',system-ui,sans-serif;max-width:800px;margin:24px auto;padding:0 12px;}"
             "table{border-collapse:collapse;margin:8px 0 28px}td,th{padding:3px 10px;text-align:right;border-bottom:1px solid #ddd}"
-            "@media (prefers-color-scheme: dark){body{background:#1a1a19;color:#f0efec}td,th{border-color:#33332f}}</style>",
+            "@media (prefers-color-scheme: dark){body{background:#0d1117;color:#f0f6fc}td,th{border-color:#262c36}}</style>",
             "<h1>Tracker-Rust: speed vs original Tracker</h1>",
             "<p>Hover a point for its value. Whole clip: original measured on 40 frames (931 ms/frame) "
             "and scaled to 721; this build measured over the whole clip.</p>",

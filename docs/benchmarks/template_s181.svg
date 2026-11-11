@@ -1,14 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 760 430" width="760" height="430" style="max-width:100%;height:auto" role="img" aria-label="Template size vs speed (search area 181×181 px)">
 
 <style>
-.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+.s { --surface:#ffffff; --ink:#1f2328; --ink2:#59636e; --grid:#d8dee4;
+     --new:#0969da; --old:#8c959f; --on-old:#1f2328; }
 @media (prefers-color-scheme: dark) {
-  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+  .s { --surface:#0d1117; --ink:#f0f6fc; --ink2:#9198a1; --grid:#262c36;
+       --new:#4493f8; --old:#656c76; --on-old:#ffffff; }
 }
 .s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
 .s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
 .s .lab { fill: var(--ink); font-size: 12px; }
 .s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .in { fill: var(--on-old); }
 .s .g { stroke: var(--grid); stroke-width: 1; }
 .s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
@@ -17,7 +20,6 @@
 .s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
 </style>
 
-<rect width="760" height="430" fill="var(--surface)"/>
 <text class="t" x="74" y="28">Template size vs speed (search area 181×181 px)</text>
 <text x="74" y="48">One frame match on a 1080×1920 frame of IMG_4122.mp4 · median · i5-13450HX</text>
 <rect x="74" y="62" width="14" height="4" rx="2" class="bo"/><text x="94" y="68">Original Tracker 6.3.5 (Java)</text>
