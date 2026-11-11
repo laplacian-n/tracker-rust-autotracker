@@ -144,6 +144,12 @@ Instead of clicking a calibration stick on a zoomed, pixelated frame:
 3. On a frame where the whole board is visible: **Coordinate System → Calibrate from
    Pattern...**, enter the square size.
 
+![Square size](docs/media/calibrate_ask.png)
+
+![Result: corners found, tilt, true scale, choice of correction](docs/media/calibrate_result.png)
+
+<sub>A rendered test frame (board tilted 21.5°), from `java/bench/.../PatternUiShot.java`.</sub>
+
 All inner corners are found to about 0.05 px (`tmnative/src/checker.rs`: saddle points
 at several blur scales, grid growing with checker-polarity checks, gradient-based
 sub-pixel refinement; works from about 8 px per square). From them

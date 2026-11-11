@@ -77,15 +77,7 @@ final class PatternCalibration {
 		JTextField size = new JTextField(lastSize, 6);
 		JComboBox<String> unit = new JComboBox<>(UNITS);
 		unit.setSelectedItem(lastUnit);
-		JPanel ask = new JPanel(new BorderLayout(0, 8));
-		ask.add(new JLabel("<html>Show a printed checkerboard lying in the plane of the motion, on this frame,<br>"
-				+ "fully visible (the white margin around it too). Then give the size of one square:</html>"),
-				BorderLayout.NORTH);
-		JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-		row.add(new JLabel("Square size"));
-		row.add(size);
-		row.add(unit);
-		ask.add(row, BorderLayout.CENTER);
+		JPanel ask = askPanel(size, unit);
 		if (JOptionPane.showConfirmDialog(frame, ask, "Calibrate from Pattern", JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE) != JOptionPane.OK_OPTION)
 			return;
@@ -128,6 +120,47 @@ final class PatternCalibration {
 		}
 
 		// 3. report and choose
+		JRadioButton simple = new JRadioButton("Scale, origin and axes only");
+		JRadioButton persp = new JRadioButton("Also correct the perspective (adds a Perspective filter)");
+		JButton apply = new JButton("Apply");
+		JButton cancel = new JButton("Cancel");
+		JPanel content = resultPanel(img, g, square, u, simple, persp, apply, cancel);
+		JDialog dialog = new JDialog(frame, "Calibrate from Pattern", true);
+		boolean[] ok = { false };
+		apply.addActionListener((e) -> {
+			ok[0] = true;
+			dialog.dispose();
+		});
+		cancel.addActionListener((e) -> dialog.dispose());
+		dialog.getRootPane().setDefaultButton(apply);
+		dialog.setContentPane(content);
+		dialog.pack();
+		dialog.setLocationRelativeTo(frame);
+		dialog.setVisible(true);
+		if (!ok[0])
+			return;
+
+		// 4. apply
+		apply(panel, g, persp.isSelected(), u);
+	}
+
+	/** the first dialog: what to show, and the square size */
+	static JPanel askPanel(JTextField size, JComboBox<String> unit) {
+		JPanel ask = new JPanel(new BorderLayout(0, 8));
+		ask.add(new JLabel("<html>Show a printed checkerboard lying in the plane of the motion, on this frame,<br>"
+				+ "fully visible (the white margin around it too). Then give the size of one square:</html>"),
+				BorderLayout.NORTH);
+		JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+		row.add(new JLabel("Square size"));
+		row.add(size);
+		row.add(unit);
+		ask.add(row, BorderLayout.CENTER);
+		return ask;
+	}
+
+	/** the result dialog's content: preview, report, choice and buttons */
+	static JPanel resultPanel(BufferedImage img, PatternGeometry g, double square, String u, JRadioButton simple,
+			JRadioButton persp, JButton apply, JButton cancel) {
 		double boardSize = Math.hypot((g.cols - 1) * square, (g.rows - 1) * square);
 		boolean recommendCorrection = g.simMaxWorld > 0.0025 * boardSize || g.tiltDeg > 4;
 		StringBuilder sb = new StringBuilder("<html><body style='width:330px'>");
@@ -152,8 +185,6 @@ final class PatternCalibration {
 		sb.append("<small>Valid for motion in the plane of the board. Objects nearer to or farther from the camera "
 				+ "than the board get a different scale.</small></body></html>");
 
-		JRadioButton simple = new JRadioButton("Scale, origin and axes only");
-		JRadioButton persp = new JRadioButton("Also correct the perspective (adds a Perspective filter)");
 		ButtonGroup group = new ButtonGroup();
 		group.add(simple);
 		group.add(persp);
@@ -162,7 +193,6 @@ final class PatternCalibration {
 				: "Recommended: scale only (the board is close to square-on).");
 		rec.setForeground(recommendCorrection ? new Color(170, 80, 0) : new Color(0, 120, 60));
 
-		JDialog dialog = new JDialog(frame, "Calibrate from Pattern", true);
 		JPanel content = new JPanel(new GridBagLayout());
 		content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		GridBagConstraints c = new GridBagConstraints();
@@ -188,28 +218,11 @@ final class PatternCalibration {
 		content.add(radios, c);
 		c.gridy++;
 		JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
-		JButton apply = new JButton("Apply");
-		JButton cancel = new JButton("Cancel");
 		buttons.add(apply);
 		buttons.add(cancel);
 		c.anchor = GridBagConstraints.SOUTHEAST;
 		content.add(buttons, c);
-		boolean[] ok = { false };
-		apply.addActionListener((e) -> {
-			ok[0] = true;
-			dialog.dispose();
-		});
-		cancel.addActionListener((e) -> dialog.dispose());
-		dialog.getRootPane().setDefaultButton(apply);
-		dialog.setContentPane(content);
-		dialog.pack();
-		dialog.setLocationRelativeTo(frame);
-		dialog.setVisible(true);
-		if (!ok[0])
-			return;
-
-		// 4. apply
-		apply(panel, g, persp.isSelected(), u);
+		return content;
 	}
 
 	/** Sets the coordinate system (and with perspective, adds the Perspective filter). */
