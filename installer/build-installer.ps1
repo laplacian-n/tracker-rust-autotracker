@@ -5,7 +5,7 @@
 # and Tracker 6.3.5 installed in C:\Program Files\Tracker the first time
 # (its OpenJDK runtime and Xuggle are copied to installer\runtime).
 # Uses the C# compiler that comes with Windows (.NET Framework 4).
-param([string]$Version = "1.1.1")
+param([string]$Version = "1.2.0")
 
 $here = $PSScriptRoot
 $root = Split-Path $here
