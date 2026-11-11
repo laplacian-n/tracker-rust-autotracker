@@ -28,13 +28,15 @@ Same video, same template and settings, about 5 seconds of screen recording each
 
 ![Where the time goes per frame](docs/benchmarks/stages.svg)
 
-Per tracked frame (1080×1920 video, template ~155 px, search area ~180 px), time on
-Tracker's UI thread:
+Per tracked frame (1080×1920 video, template ~155 px, search area ~180 px). Original:
+everything runs one step after another on Tracker's UI thread. This build: the time the
+UI thread spends on the step; the search, the sub-pixel refinement and the decoding run
+on background threads, overlapped with the rest of the frame.
 
 | Step | Original Tracker 6.3.5 | | This build | |
 |---|---|---:|---|---:|
 | Find the match | Java loop over every search position | 896 ms | Rust: AVX2 integer kernel or exact FFT, all cores; next frame matched ahead on a background thread | ~2 ms |
-| Sub-pixel position | 3-point parabola | ~0.3 ms | Gauss-Newton on a bicubic-interpolated image (AVX2), more accurate | ~0.8 ms |
+| Sub-pixel position | 3-point parabola | ~0.3 ms | Gauss-Newton on a bicubic-interpolated image (AVX2), about 3× more accurate; ~0.8 ms of compute on the background thread, alongside the search | ~0 |
 | Decode the video frame | FFmpeg, 1 thread, on the UI thread | 7.7 ms | 8-thread decoder running up to 8 frames ahead | ~0.04 ms |
 | Copy frame for display | per-pixel BGR→RGB copy of the whole frame | 2.0 ms | decoded image used directly | 0 |
 | Redraw screen + panels | every frame | 5.9 ms | ~25 times a second | ~1.1 ms |

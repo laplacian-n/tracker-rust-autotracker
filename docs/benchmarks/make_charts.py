@@ -114,7 +114,7 @@ STAGES = [
     ("Find the match", "Java loop over every position", 896.0,
      "Rust AVX2 / FFT, all cores, run ahead", 2.0),
     ("Sub-pixel position", "3-point parabola", 0.3,
-     "Gauss-Newton on bicubic image (AVX2)", 0.8),
+     "Gauss-Newton, more accurate: 0.8 ms on the background thread", 0.0),
     ("Decode video frame", "FFmpeg, 1 thread, on the UI thread", 7.7,
      "8-thread decoder running ahead", 0.04),
     ("Copy frame for display", "per-pixel BGR to RGB copy", 2.0,
@@ -150,7 +150,7 @@ def stage_chart(name):
         o.append(f'<text class="lab" x="{L - 12}" y="{y + 22}" text-anchor="end">{escape(stage)}</text>')
         for j, (cls, tech, v) in enumerate((("bo", ot, ov), ("bn", nt, nv))):
             yy = y + 4 + j * 26
-            val = "0 (skipped)" if v == 0 else fmt_ms(v)
+            val = ("0 (skipped)" if tech.startswith(("decoded", "no wait")) else "≈0") if v == 0 else fmt_ms(v)
             if v > 0:
                 w = X(v) - L
                 o.append(f'<rect class="{cls}" x="{L}" y="{yy}" width="{max(w, 2):.1f}" height="16" rx="4"><title>{escape(tech)}: {val}</title></rect>')
