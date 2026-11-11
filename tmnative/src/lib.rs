@@ -32,6 +32,7 @@
 //! the "pixel locking" bias of the 3-point parabola Tracker uses.
 
 use jni_sys::*;
+mod filedialog;
 use rayon::prelude::*;
 use std::ptr::null_mut;
 

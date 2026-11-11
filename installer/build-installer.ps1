@@ -1,11 +1,11 @@
-# Builds installer\build\Tracker-Rust-Setup-<version>.exe: a single installer with
+﻿# Builds installer\build\Tracker-Rust-Setup-<version>.exe: a single installer with
 # the Java runtime, Xuggle, tracker-native.jar and tmnative.dll inside.
 #
 # Needs: build.ps1 run first (tracker-native\tracker-native.jar and tmnative.dll),
 # and Tracker 6.3.5 installed in C:\Program Files\Tracker the first time
 # (its OpenJDK runtime and Xuggle are copied to installer\runtime).
 # Uses the C# compiler that comes with Windows (.NET Framework 4).
-param([string]$Version = "1.1.0")
+param([string]$Version = "1.1.1")
 
 $here = $PSScriptRoot
 $root = Split-Path $here

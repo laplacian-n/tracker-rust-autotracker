@@ -97,6 +97,12 @@ Videos and Tracker files can be anywhere.
 From a build (below): with Tracker 6.3.5 in `C:\Program Files\Tracker`, double-click
 `tracker-native\Tracker-Rust.bat`.
 
+- File → Open, Save, Import, Export and the other file choosers use the Windows file
+  dialog (the File Explorer style picker: quick access, search, previews), with
+  Tracker's file types as its "files of type" list. All of Tracker's choosers go through
+  `javajs.async.AsyncFileChooser.showDialog`, which hands the request to
+  `tmnative.dll` (`IFileOpenDialog`/`IFileSaveDialog`) and puts the result back into the
+  chooser; if that is not possible, Tracker's own chooser opens. Independent of Fast.
 - The Autotracker's **Fast** checkbox is the switch between this build and stock
   Tracker (`media.core.Patch.ON`):
   - ticked: native matcher + refine, read-ahead decoding, ahead-of-time matching,
@@ -177,6 +183,7 @@ acceleration), `TM_REFINE_PAR=1` (row-band parallel refine).
 | `tracker.fastpaint` | `true` | in Fast mode, repaint ~25×/s and refresh the wizard ~4×/s |
 | `tracker.fastpaint.profile` | `true` | per-event timing breakdown in the perf log |
 | `tracker.native.perf` | `true` | the perf log itself |
+| `tracker.native.dialog` | `true` | open/save with the Windows (File Explorer) dialog; `false` = Tracker's Swing chooser |
 
 ## What it does
 
@@ -219,6 +226,8 @@ with an evolving template, 299 frames).
   `NativeMatcher`, `media/xuggle/XuggleVideo`, `cabrillo/tracker/AutoTracker`, `TrackerPanel`, `FastPaint`
 - `src_orig/` — stock Tracker 6.3.5 sources (from the `version_6.3.5` tag), for reference
 - `java/bench` — `Bench`, `AccBench`, `DecodeBench`, `PrefetchCheck`, `SpecCheck`
+- `java/src/javajs/async` — `AsyncFileChooser` (patched) and `NativeChooser`: the Windows file dialog;
+  `tmnative/src/filedialog.rs` is its native side
 - `installer/` — launcher, setup and uninstaller (C#), `build-installer.ps1`
 
 ## License and credits

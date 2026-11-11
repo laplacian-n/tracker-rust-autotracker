@@ -36,7 +36,9 @@ static class Launcher
         if (env != null && long.TryParse(env.Trim(), out mb) && mb >= 256) return mb;
         MEMORYSTATUSEX m = new MEMORYSTATUSEX();
         if (!GlobalMemoryStatusEx(m)) return 2048;
-        mb = (long)(m.ullTotalPhys / 2 / (1024 * 1024));
+        // rounded, as the earlier .bat did: Tracker remembers the size it last ran
+        // with and shows "Preferred Memory Reduced" if asked for even 1 MB less
+        mb = (long)Math.Round(m.ullTotalPhys / 2.0 / (1024 * 1024));
         return Math.Min(16384, Math.Max(1024, mb));
     }
 

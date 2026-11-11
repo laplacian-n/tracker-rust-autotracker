@@ -27,7 +27,7 @@ if (-not $NoBuild) {
 	Copy-Item java\lib\tracker.jar $jar -Force
 	Push-Location java
 	$root = (Resolve-Path patched).Path
-	$classes = Get-ChildItem patched\org -Recurse -Filter *.class |
+	$classes = Get-ChildItem patched\org, patched\javajs -Recurse -Filter *.class |
 		ForEach-Object { '-C'; 'patched'; $_.FullName.Substring($root.Length + 1).Replace('\', '/') }
 	& "$jdk\bin\jar.exe" uf $jar @classes
 	if ($LASTEXITCODE) { throw 'jar failed' }

@@ -14,7 +14,9 @@ if (-not $jdk) { throw 'JDK not found (set JAVA_HOME to a JDK 17+)' }
 
 # A running Tracker holds tracker-native.jar open: overwriting it under the JVM can crash it.
 $running = Get-CimInstance Win32_Process -Filter "Name like 'java%'" |
-	Where-Object { $_.CommandLine -match 'tracker-native\.jar' }
+	Where-Object { $_.CommandLine -match 'tracker-native\.jar' } |
+	# an installed copy (from the installer) uses its own jar, not this one
+	Where-Object { -not ($_.ExecutablePath -and (Test-Path (Join-Path (Split-Path (Split-Path (Split-Path $_.ExecutablePath))) 'install-files.txt'))) }
 if ($running) { throw "Tracker-Rust is running (PID $($running.ProcessId -join ', ')): save and close it first" }
 
 # 0. stock tracker.jar from the installed Tracker 6.3.5 (not kept in the repository)
@@ -52,9 +54,9 @@ Copy-Item $dll patched\tmnative.dll -Force
 # 3. tracker-native.jar = tracker.jar + patched classes, built aside and then moved in
 $tmpJar = Join-Path $env:TEMP 'tracker-native-build.jar'
 Copy-Item lib\tracker.jar $tmpJar -Force
-# every class under patched\org (inner classes included), as "-C patched <relative path>"
+# every class under patched\org and patched\javajs (inner classes included), as "-C patched <relative path>"
 $root = (Resolve-Path patched).Path
-$classes = Get-ChildItem patched\org -Recurse -Filter *.class |
+$classes = Get-ChildItem patched\org, patched\javajs -Recurse -Filter *.class |
 	ForEach-Object { '-C'; 'patched'; $_.FullName.Substring($root.Length + 1).Replace('\', '/') }
 & "$jdk\bin\jar.exe" uf $tmpJar @classes
 if ($LASTEXITCODE) { throw 'jar failed' }

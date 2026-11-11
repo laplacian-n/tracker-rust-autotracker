@@ -10,6 +10,9 @@ public class NativeMatcher {
 	public static final int JAVA = -1;
 	public static volatile int mode = JAVA;
 
+	/** True once tmnative.dll is loaded (also when the Java matcher is chosen with mode -1). */
+	public static volatile boolean libraryLoaded;
+
 	/**
 	 * Sub-pixel refinement after the parabola fit (-Dtracker.native.refine,
 	 * default true): Gauss-Newton on a bicubic-interpolated target, more accurate
@@ -19,10 +22,11 @@ public class NativeMatcher {
 
 	static {
 		int m = Integer.getInteger("tracker.native.mode", 7);
-		if (m >= 0) {
+		{
 			try {
 				System.loadLibrary("tmnative");
-				mode = m;
+				libraryLoaded = true;
+				mode = Math.max(m, JAVA);
 			} catch (Throwable t) {
 				// Tracker relaunches itself without java.library.path, so also
 				// look next to the jar this class came from
@@ -31,7 +35,8 @@ public class NativeMatcher {
 							NativeMatcher.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 					java.io.File dir = jar.isDirectory() ? jar : jar.getParentFile();
 					System.load(loadablePath(new java.io.File(dir, System.mapLibraryName("tmnative"))));
-					mode = m;
+					libraryLoaded = true;
+					mode = Math.max(m, JAVA);
 				} catch (Throwable t2) {
 					System.err.println("tmnative not loaded, using Java matcher: " + t2);
 				}
@@ -89,6 +94,15 @@ public class NativeMatcher {
 	 * Searches for the template; out gets {matchIndex, minDiffSq, sumDiffSq, n}.
 	 * pts is null for a full rectangle search, else flat {x0, y0, x1, y1, ...}.
 	 */
+	/**
+	 * The Windows (File Explorer style) file dialog. flags: 1 save, 2 multiple
+	 * selection, 4 folders. Returns null if cancelled, an empty array if it could
+	 * not be shown, else {chosen filter index, path, ...}. Blocks until closed;
+	 * call it on a thread of its own (it sets up COM there).
+	 */
+	public static native String[] fileDialog(int flags, String title, String okLabel, String folder,
+			String fileName, String[] filterNames, String[] filterSpecs, int filterIndex);
+
 	static native void search(int[] target, int wTest, int[] tR, int[] tG, int[] tB,
 			boolean[] transparent, int wTemplate, int hTemplate, int[] pts, int sw, int sh,
 			int mode, double[] out);
