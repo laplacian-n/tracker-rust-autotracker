@@ -1,0 +1,22 @@
+[package]
+name = "tmnative"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+description = "Native template matcher for an AutoTracker build of Tracker 6.3.5"
+
+[dependencies]
+jni-sys = "0.3"
+rayon = "1"
+rustfft = "6"
+transpose = "0.2"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true

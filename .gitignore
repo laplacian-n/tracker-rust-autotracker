@@ -1,0 +1,20 @@
+# build output
+tmnative/target/
+java/patched/
+java/bench/out/
+java/lib/
+tracker-native/*.jar
+tracker-native/*.dll
+
+# videos and Tracker projects (personal data)
+videos/
+*.mp4
+*.mov
+*.avi
+*.trz
+*.trk
+
+# logs and local files
+*.log
+patch.py
+docs/benchmarks/__pycache__/

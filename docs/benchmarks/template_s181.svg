@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 760 430" width="760" height="430" style="max-width:100%;height:auto" role="img" aria-label="Template size vs speed (search area 181×181 px)">
+
+<style>
+.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+@media (prefers-color-scheme: dark) {
+  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+}
+.s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
+.s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
+.s .lab { fill: var(--ink); font-size: 12px; }
+.s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .g { stroke: var(--grid); stroke-width: 1; }
+.s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
+.s .dn { fill: var(--new); stroke: var(--surface); stroke-width: 2; }
+.s .do { fill: var(--old); stroke: var(--surface); stroke-width: 2; }
+.s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
+</style>
+
+<rect width="760" height="430" fill="var(--surface)"/>
+<text class="t" x="74" y="28">Template size vs speed (search area 181×181 px)</text>
+<text x="74" y="48">One frame match on a 1080×1920 frame of IMG_4122.mp4 · median · i5-13450HX</text>
+<rect x="74" y="62" width="14" height="4" rx="2" class="bo"/><text x="94" y="68">Original Tracker 6.3.5 (Java)</text>
+<rect x="304" y="62" width="14" height="4" rx="2" class="bn"/><text x="324" y="68">This build (Rust, Fast ticked)</text>
+<line class="g" x1="74" x2="560" y1="378.0" y2="378.0"/>
+<text x="66" y="382.0" text-anchor="end">0.1 ms</text>
+<line class="g" x1="74" x2="560" y1="320.8" y2="320.8"/>
+<text x="66" y="324.8" text-anchor="end">1 ms</text>
+<line class="g" x1="74" x2="560" y1="263.6" y2="263.6"/>
+<text x="66" y="267.6" text-anchor="end">10 ms</text>
+<line class="g" x1="74" x2="560" y1="206.4" y2="206.4"/>
+<text x="66" y="210.4" text-anchor="end">100 ms</text>
+<line class="g" x1="74" x2="560" y1="149.2" y2="149.2"/>
+<text x="66" y="153.2" text-anchor="end">1 s</text>
+<line class="g" x1="74" x2="560" y1="92.0" y2="92.0"/>
+<text x="66" y="96.0" text-anchor="end">10 s</text>
+<text x="74.0" y="396" text-anchor="middle">11</text>
+<text x="182.2" y="396" text-anchor="middle">21</text>
+<text x="294.1" y="396" text-anchor="middle">41</text>
+<text x="360.5" y="396" text-anchor="middle">61</text>
+<text x="408.0" y="396" text-anchor="middle">81</text>
+<text x="475.1" y="396" text-anchor="middle">121</text>
+<text x="522.9" y="396" text-anchor="middle">161</text>
+<text x="560.0" y="396" text-anchor="middle">201</text>
+<text x="317.0" y="420" text-anchor="middle">template side (px, log scale)</text>
+<text x="14" y="235.0" transform="rotate(-90 14 235.0)" text-anchor="middle">time per frame match (log scale)</text>
+<polyline class="ln old" points="74.0,279.3 182.2,249.3 294.1,216.8 360.5,195.4 408.0,179.2 475.1,145.2 522.9,129.8 560.0,107.9"/>
+<circle class="do" cx="74.0" cy="279.3" r="4"><title>Original: template side (px, log scale) 11 → 5.3 ms (×16 faster with this build)</title></circle>
+<circle class="do" cx="182.2" cy="249.3" r="4"><title>Original: template side (px, log scale) 21 → 18 ms (×40 faster with this build)</title></circle>
+<circle class="do" cx="294.1" cy="216.8" r="4"><title>Original: template side (px, log scale) 41 → 66 ms (×87 faster with this build)</title></circle>
+<circle class="do" cx="360.5" cy="195.4" r="4"><title>Original: template side (px, log scale) 61 → 156 ms (×182 faster with this build)</title></circle>
+<circle class="do" cx="408.0" cy="179.2" r="4"><title>Original: template side (px, log scale) 81 → 299 ms (×310 faster with this build)</title></circle>
+<circle class="do" cx="475.1" cy="145.2" r="4"><title>Original: template side (px, log scale) 121 → 1.17 s (×420 faster with this build)</title></circle>
+<circle class="do" cx="522.9" cy="129.8" r="4"><title>Original: template side (px, log scale) 161 → 2.18 s (×574 faster with this build)</title></circle>
+<circle class="do" cx="560.0" cy="107.9" r="4"><title>Original: template side (px, log scale) 201 → 5.28 s (×2539 faster with this build)</title></circle>
+<text class="lab" x="570.0" y="111.9">Original 5.28 s</text>
+<polyline class="ln new" points="74.0,348.1 182.2,341.0 294.1,327.8 360.5,324.6 408.0,321.7 475.1,295.3 522.9,287.7 560.0,302.6"/>
+<circle class="dn" cx="74.0" cy="348.1" r="4"><title>This build: template side (px, log scale) 11 → 0.33 ms (×16 faster with this build)</title></circle>
+<circle class="dn" cx="182.2" cy="341.0" r="4"><title>This build: template side (px, log scale) 21 → 0.44 ms (×40 faster with this build)</title></circle>
+<circle class="dn" cx="294.1" cy="327.8" r="4"><title>This build: template side (px, log scale) 41 → 0.76 ms (×87 faster with this build)</title></circle>
+<circle class="dn" cx="360.5" cy="324.6" r="4"><title>This build: template side (px, log scale) 61 → 0.86 ms (×182 faster with this build)</title></circle>
+<circle class="dn" cx="408.0" cy="321.7" r="4"><title>This build: template side (px, log scale) 81 → 0.96 ms (×310 faster with this build)</title></circle>
+<circle class="dn" cx="475.1" cy="295.3" r="4"><title>This build: template side (px, log scale) 121 → 2.8 ms (×420 faster with this build)</title></circle>
+<circle class="dn" cx="522.9" cy="287.7" r="4"><title>This build: template side (px, log scale) 161 → 3.8 ms (×574 faster with this build)</title></circle>
+<circle class="dn" cx="560.0" cy="302.6" r="4"><title>This build: template side (px, log scale) 201 → 2.1 ms (×2539 faster with this build)</title></circle>
+<text class="lab" x="570.0" y="306.6">This build 2.1 ms</text>
+<text class="big" x="570.0" y="209.2">×2,539 faster</text>
+</svg>

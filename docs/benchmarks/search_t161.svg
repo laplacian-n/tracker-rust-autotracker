@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 760 430" width="760" height="430" style="max-width:100%;height:auto" role="img" aria-label="Search area vs speed (template 161×161 px)">
+
+<style>
+.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+@media (prefers-color-scheme: dark) {
+  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+}
+.s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
+.s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
+.s .lab { fill: var(--ink); font-size: 12px; }
+.s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .g { stroke: var(--grid); stroke-width: 1; }
+.s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
+.s .dn { fill: var(--new); stroke: var(--surface); stroke-width: 2; }
+.s .do { fill: var(--old); stroke: var(--surface); stroke-width: 2; }
+.s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
+</style>
+
+<rect width="760" height="430" fill="var(--surface)"/>
+<text class="t" x="74" y="28">Search area vs speed (template 161×161 px)</text>
+<text x="74" y="48">One frame match on a 1080×1920 frame of IMG_4122.mp4 · median · i5-13450HX</text>
+<rect x="74" y="62" width="14" height="4" rx="2" class="bo"/><text x="94" y="68">Original Tracker 6.3.5 (Java)</text>
+<rect x="304" y="62" width="14" height="4" rx="2" class="bn"/><text x="324" y="68">This build (Rust, Fast ticked)</text>
+<line class="g" x1="74" x2="560" y1="378.0" y2="378.0"/>
+<text x="66" y="382.0" text-anchor="end">0.1 ms</text>
+<line class="g" x1="74" x2="560" y1="320.8" y2="320.8"/>
+<text x="66" y="324.8" text-anchor="end">1 ms</text>
+<line class="g" x1="74" x2="560" y1="263.6" y2="263.6"/>
+<text x="66" y="267.6" text-anchor="end">10 ms</text>
+<line class="g" x1="74" x2="560" y1="206.4" y2="206.4"/>
+<text x="66" y="210.4" text-anchor="end">100 ms</text>
+<line class="g" x1="74" x2="560" y1="149.2" y2="149.2"/>
+<text x="66" y="153.2" text-anchor="end">1 s</text>
+<line class="g" x1="74" x2="560" y1="92.0" y2="92.0"/>
+<text x="66" y="96.0" text-anchor="end">10 s</text>
+<text x="74.0" y="396" text-anchor="middle">21</text>
+<text x="184.2" y="396" text-anchor="middle">41</text>
+<text x="296.4" y="396" text-anchor="middle">81</text>
+<text x="362.6" y="396" text-anchor="middle">121</text>
+<text x="428.9" y="396" text-anchor="middle">181</text>
+<text x="476.1" y="396" text-anchor="middle">241</text>
+<text x="523.3" y="396" text-anchor="middle">321</text>
+<text x="560.0" y="396" text-anchor="middle">401</text>
+<text x="317.0" y="420" text-anchor="middle">search area side (px, log scale)</text>
+<text x="14" y="235.0" transform="rotate(-90 14 235.0)" text-anchor="middle">time per frame match (log scale)</text>
+<polyline class="ln old" points="74.0,233.5 184.2,203.8 296.4,177.9 362.6,150.3 428.9,138.3 476.1,120.9 523.3,117.7 560.0,106.8"/>
+<circle class="do" cx="74.0" cy="233.5" r="4"><title>Original: search area side (px, log scale) 21 → 34 ms (×40 faster with this build)</title></circle>
+<circle class="do" cx="184.2" cy="203.8" r="4"><title>Original: search area side (px, log scale) 41 → 111 ms (×81 faster with this build)</title></circle>
+<circle class="do" cx="296.4" cy="177.9" r="4"><title>Original: search area side (px, log scale) 81 → 315 ms (×192 faster with this build)</title></circle>
+<circle class="do" cx="362.6" cy="150.3" r="4"><title>Original: search area side (px, log scale) 121 → 959 ms (×623 faster with this build)</title></circle>
+<circle class="do" cx="428.9" cy="138.3" r="4"><title>Original: search area side (px, log scale) 181 → 1.55 s (×771 faster with this build)</title></circle>
+<circle class="do" cx="476.1" cy="120.9" r="4"><title>Original: search area side (px, log scale) 241 → 3.13 s (×1124 faster with this build)</title></circle>
+<circle class="do" cx="523.3" cy="117.7" r="4"><title>Original: search area side (px, log scale) 321 → 3.56 s (×1109 faster with this build)</title></circle>
+<circle class="do" cx="560.0" cy="106.8" r="4"><title>Original: search area side (px, log scale) 401 → 5.52 s (×1608 faster with this build)</title></circle>
+<text class="lab" x="570.0" y="110.8">Original 5.52 s</text>
+<polyline class="ln new" points="74.0,325.3 184.2,313.0 296.4,308.5 362.6,310.1 428.9,303.4 476.1,295.4 523.3,291.8 560.0,290.2"/>
+<circle class="dn" cx="74.0" cy="325.3" r="4"><title>This build: search area side (px, log scale) 21 → 0.83 ms (×40 faster with this build)</title></circle>
+<circle class="dn" cx="184.2" cy="313.0" r="4"><title>This build: search area side (px, log scale) 41 → 1.4 ms (×81 faster with this build)</title></circle>
+<circle class="dn" cx="296.4" cy="308.5" r="4"><title>This build: search area side (px, log scale) 81 → 1.6 ms (×192 faster with this build)</title></circle>
+<circle class="dn" cx="362.6" cy="310.1" r="4"><title>This build: search area side (px, log scale) 121 → 1.5 ms (×623 faster with this build)</title></circle>
+<circle class="dn" cx="428.9" cy="303.4" r="4"><title>This build: search area side (px, log scale) 181 → 2.0 ms (×771 faster with this build)</title></circle>
+<circle class="dn" cx="476.1" cy="295.4" r="4"><title>This build: search area side (px, log scale) 241 → 2.8 ms (×1124 faster with this build)</title></circle>
+<circle class="dn" cx="523.3" cy="291.8" r="4"><title>This build: search area side (px, log scale) 321 → 3.2 ms (×1109 faster with this build)</title></circle>
+<circle class="dn" cx="560.0" cy="290.2" r="4"><title>This build: search area side (px, log scale) 401 → 3.4 ms (×1608 faster with this build)</title></circle>
+<text class="lab" x="570.0" y="294.2">This build 3.4 ms</text>
+<text class="big" x="570.0" y="202.5">×1,608 faster</text>
+</svg>

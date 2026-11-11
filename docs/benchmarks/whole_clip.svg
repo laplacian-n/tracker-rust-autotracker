@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="s" viewBox="0 0 760 196" width="760" height="196" style="max-width:100%;height:auto" role="img" aria-label="Autotracking the whole clip (721 frames)">
+
+<style>
+.s { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e6e5e0; --new:#2a78d6; --old:#eb6834; }
+@media (prefers-color-scheme: dark) {
+  .s { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#33332f; --new:#3987e5; --old:#d95926; }
+}
+.s text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; fill: var(--ink2); font-size: 12px; }
+.s .t { fill: var(--ink); font-size: 16px; font-weight: 600; }
+.s .lab { fill: var(--ink); font-size: 12px; }
+.s .big { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.s .g { stroke: var(--grid); stroke-width: 1; }
+.s .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.s .new { stroke: var(--new); } .s .old { stroke: var(--old); }
+.s .dn { fill: var(--new); stroke: var(--surface); stroke-width: 2; }
+.s .do { fill: var(--old); stroke: var(--surface); stroke-width: 2; }
+.s .bn { fill: var(--new); } .s .bo { fill: var(--old); }
+</style>
+
+<rect width="760" height="196" fill="var(--surface)"/>
+<text class="t" x="20" y="28">Autotracking the whole clip (721 frames)</text>
+<text x="20" y="48">IMG_4122.mp4 · template 154×152 · search ~180×180 · Evolve 20% · original: 931 ms/frame measured on 40 frames, × 721</text>
+<text class="lab" x="198" y="96" text-anchor="end">Original Tracker 6.3.5</text>
+<rect class="bo" x="210" y="82" width="430.0" height="20" rx="4"><title>Original Tracker 6.3.5: 671.3 s</title></rect>
+<text class="big" x="648.0" y="97">11.2 min</text>
+<text class="lab" x="198" y="152" text-anchor="end">This build (Fast ticked)</text>
+<rect class="bn" x="210" y="138" width="2.5" height="20" rx="4"><title>This build (Fast ticked): 3.8 s</title></rect>
+<text class="big" x="220.5" y="153">3.8 s</text>
+<line class="g" x1="210" x2="210" y1="74" y2="170"/>
+</svg>
