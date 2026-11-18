@@ -33,6 +33,14 @@
 
 use jni_sys::*;
 mod filedialog;
+
+/// AVX2 available (and not turned off with TM_NO_AVX2=1, which mimics a CPU
+/// without it, e.g. an Intel build running through Rosetta 2 on Apple silicon).
+#[cfg(target_arch = "x86_64")]
+fn avx2() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::is_x86_feature_detected!("avx2") && std::env::var_os("TM_NO_AVX2").is_none())
+}
 pub mod checker;
 use rayon::prelude::*;
 use std::ptr::null_mut;
@@ -330,7 +338,7 @@ type RowFn = fn(&Opaque, &Planes<i16>, usize, usize, &mut [u32]);
 /// otherwise the SSE2 baseline. Both give identical integer results.
 fn row_kernel() -> RowFn {
     #[cfg(target_arch = "x86_64")]
-    if std::is_x86_feature_detected!("avx2") {
+    if avx2() {
         return |o, p, w, y, out| unsafe { row_avx2(o, p, w, y, out) };
     }
     row_plain
@@ -539,7 +547,7 @@ type PointFn = fn(&Geometry, &Planes<i16>, &Planes<i16>, i32, i32) -> Option<u64
 /// Per-point SSD for line searches: the masked i16 kernel, AVX2 when available.
 fn point_kernel() -> PointFn {
     #[cfg(target_arch = "x86_64")]
-    if std::is_x86_feature_detected!("avx2") {
+    if avx2() {
         return |g, t, p, x, y| unsafe { ssd_i16_avx2(g, t, p, x, y) };
     }
     ssd_i16
@@ -632,7 +640,7 @@ fn normal_eq(win: &[Vec<f64>; 3], ws: usize, rt: &RefTpl, ht: usize, ix: i64, iy
         a
     };
     #[cfg(target_arch = "x86_64")]
-    if is_x86_feature_detected!("avx2") && is_x86_feature_detected!("fma") {
+    if avx2() && is_x86_feature_detected!("fma") {
         // big templates: channels x row bands on the rayon pool (it is usually busy
         // anyway right after the search); partial sums added in a fixed order, so the
         // result does not depend on the number of threads
@@ -1158,7 +1166,7 @@ fn run(mode: i32, target: &[i32], w_test: usize, tr: &[i32], tg: &[i32], tb: &[i
         // madd + prefix sums (AVX2 only); same preconditions as the row-batched modes
         #[cfg(target_arch = "x86_64")]
         10 | 11 if pts.is_none()
-            && std::is_x86_feature_detected!("avx2")
+            && avx2()
             && sw > 0 && sh > 0
             && w_test >= sw as usize + wt - 1
             && g.len >= (sh as usize + ht - 1) * w_test

@@ -4,7 +4,7 @@
 #
 #   packaging/macos/smoke-test.sh path/to/Tracker-Rust.app path/to/bench-classes
 #
-# 1. the native matcher gives the same matches as on Windows (Bench signatures)
+# 1. the Rust matcher: same matches as stock Tracker / Windows, and fast
 # 2. the checkerboard detector and calibration geometry (PatternCheck)
 # 3. Xuggle writes and reads a video; read-ahead decoding gives identical frames
 # 4. the app itself starts and stays up
@@ -24,14 +24,24 @@ file "$JAVA" "$C/Java/libtmnative.dylib"
 "$JAVA" -XshowSettings:properties -version 2>&1 | grep -E "os.arch|java.version " | sed 's/^ */  /'
 
 echo "== 1. matcher"
-"$JAVA" -cp "$CP" Bench mac 7 0 >"$WORK/bench.txt" 2>&1
-cat "$WORK/bench.txt"
+# Fast mode (Patch.ON): the Rust matcher. Integer matches must equal stock Tracker's
+# (refine off); with Gauss-Newton refinement the sub-pixel results must equal Windows'.
+"$JAVA" -Dtracker.patch.on=true -Dtracker.native.refine=false -cp "$CP" Bench int 7 12 >"$WORK/bench.txt" 2>&1
+"$JAVA" -Dtracker.patch.on=true -cp "$CP" Bench refine 7 >>"$WORK/bench.txt" 2>&1
+cut -f1-7 "$WORK/bench.txt"
 grep -q "native library loaded" "$WORK/bench.txt"
 check $? "native library loads"
-bad=$(grep -E "^mac" "$WORK/bench.txt" | grep -cvE "sig=(74f1b8e8|88dda8e0|e825850f|525a6707|4e68125c)")
-n=$(grep -cE "^mac" "$WORK/bench.txt")
-[ "$n" -ge 10 ] && [ "$bad" = 0 ]
-check $? "matches identical to Windows / stock Tracker ($n results)"
+n=$(grep -cE "^int" "$WORK/bench.txt")
+bad=$(grep -E "^int" "$WORK/bench.txt" | grep -cvE "sig=(74f1b8e8|88dda8e0|e825850f|525a6707|4e68125c)")
+[ "$n" = 10 ] && [ "$bad" = 0 ]
+check $? "integer matches identical to stock Tracker ($n results)"
+n=$(grep -cE "^refine" "$WORK/bench.txt")
+bad=$(grep -E "^refine" "$WORK/bench.txt" | grep -cvE "sig=(28978dcb|76de1fde|834a4511|b9f3dd42|fa127f1c)")
+[ "$n" = 5 ] && [ "$bad" = 0 ]
+check $? "sub-pixel results identical to Windows ($n results)"
+us=$(awk -F'	' '$1=="int" && $2=="tpl=81" && $4=="mode=7" {sub("median_us=","",$5); print int($5)}' "$WORK/bench.txt")
+[ -n "$us" ] && [ "$us" -lt 100000 ]
+check $? "Rust matcher in use: template 81, search 401 in ${us:-?} us (stock Java ~1,700,000 us)"
 
 echo "== 2. checkerboard"
 "$JAVA" -cp "$CP" PatternCheck >"$WORK/pattern.txt" 2>&1

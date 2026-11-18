@@ -82,7 +82,7 @@ Sources: matcher and decode timings from the per-frame log
 
 ## Run
 
-**Install:** download `Tracker-Rust-Setup-<version>.exe` from
+**Install (Windows):** download `Tracker-Rust-Setup-<version>.exe` from
 [Releases](https://github.com/laplacian-n/tracker-rust-autotracker/releases/latest) and
 double-click it. It contains everything (Java runtime and Xuggle from Tracker 6.3.5),
 installs for the current user without administrator rights, adds Start menu / desktop
@@ -96,6 +96,17 @@ Videos and Tracker files can be anywhere.
 
 From a build (below): with Tracker 6.3.5 in `C:\Program Files\Tracker`, double-click
 `tracker-native\Tracker-Rust.bat`.
+
+**Install (macOS):** download `Tracker-Rust-<version>-macOS.dmg` from Releases (or the
+latest build from the [macOS build](https://github.com/laplacian-n/tracker-rust-autotracker/actions/workflows/macos.yml)
+workflow's artifacts), open it and drag Tracker-Rust onto Applications. Java and Xuggle
+are included. The app is not signed by Apple: on the first start use System Settings →
+Privacy & Security → *Open Anyway* (macOS 15+) or right-click → Open (macOS 14 and
+earlier). Tracker's video library, Xuggle, exists only for Intel Macs, so the app is
+Intel code and on Apple silicon (M1 and later) runs through Rosetta 2; if Rosetta is
+missing, the app offers to install it. The Rust matcher then runs without AVX2 (Rosetta
+has none) and uses its FFT and plain paths, which give the same matches. The Windows
+file dialog is Windows-only; on macOS Tracker's own chooser opens.
 
 - File → Open, Save, Import, Export and the other file choosers use the Windows file
   dialog (the File Explorer style picker: quick access, search, previews), with
@@ -201,6 +212,23 @@ Copies the OpenJDK runtime and Xuggle from the installed Tracker into `installer
 with the C# compiler that comes with Windows (.NET Framework 4), and embeds everything as
 one zip in `installer\build\Tracker-Rust-Setup-<version>.exe`.
 
+
+macOS (on a Mac with Xcode command line tools, Rust and a JDK 17+; or let the workflow do it):
+
+```
+VERSION=1.2.0 packaging/macos/build-macos.sh
+```
+
+Downloads and checks (SHA-256) Tracker 6.3.5's `tracker.jar` and Xuggle from the Open
+Source Physics repositories and the Eclipse Temurin 21 runtime for Intel Macs, builds
+`libtmnative.dylib` for `x86_64-apple-darwin` (also from an Apple silicon Mac), compiles
+the patched classes and makes `build/macos/Tracker-Rust.app` and the `.dmg`
+(`packaging/macos`). The [workflow](.github/workflows/macos.yml) builds on an Apple silicon
+runner, runs `packaging/macos/smoke-test.sh` there through Rosetta 2 and on an Intel
+runner (matcher signatures identical to Windows, checkerboard detection, Xuggle encode/
+decode with read-ahead decoding giving identical frames, app start), and attaches the
+`.dmg` to a published release.
+
 ## Unattended benchmark
 
 ```
@@ -226,6 +254,9 @@ acceleration), `TM_REFINE_PAR=1` (row-band parallel refine).
 | `tracker.fastpaint.profile` | `true` | per-event timing breakdown in the perf log |
 | `tracker.native.perf` | `true` | the perf log itself |
 | `tracker.native.dialog` | `true` | open/save with the Windows (File Explorer) dialog; `false` = Tracker's Swing chooser |
+
+Environment: `TM_NO_AVX2=1` makes the Rust matcher behave as on a CPU without AVX2 (as an
+Intel build under Rosetta 2 on Apple silicon): it then uses the FFT and plain paths.
 
 ## What it does
 
