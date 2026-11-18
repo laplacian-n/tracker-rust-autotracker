@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Tracker-Rust</string>
+	<key>CFBundleDisplayName</key>
+	<string>Tracker-Rust</string>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.laplacian-n.tracker-rust</string>
+	<key>CFBundleVersion</key>
+	<string>@VERSION@</string>
+	<key>CFBundleShortVersionString</key>
+	<string>@VERSION@</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleExecutable</key>
+	<string>Tracker-Rust</string>
+	<key>CFBundleIconFile</key>
+	<string>Tracker-Rust</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.15</string>
+	<key>LSArchitecturePriority</key>
+	<array>
+		<string>x86_64</string>
+	</array>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>GPL-3.0-or-later. Tracker and the Open Source Physics library (c) Douglas Brown, Wolfgang Christian and contributors.</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Tracker file</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>trk</string>
+				<string>trz</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Tracker-Rust</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+		</dict>
+	</array>
+</dict>
+</plist>

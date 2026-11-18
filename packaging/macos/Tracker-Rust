@@ -1,0 +1,53 @@
+#!/bin/bash
+# Tracker-Rust.app launcher: starts Tracker with the bundled Java runtime, Xuggle
+# and the Rust autotracker.
+#
+# Tracker's video library (Xuggle) exists only for Intel Macs, so on Apple
+# silicon (M1 and later) the runtime runs through Rosetta 2; it is offered for
+# installation the first time if missing.
+#
+# Memory: half of the physical RAM (1-16 GB); override with TRACKER_MEMORY_MB.
+
+CONTENTS="$(cd "$(dirname "$0")/.." && pwd -P)"
+JAVA="$CONTENTS/Resources/jre/Contents/Home/bin/java"
+HOME_DIR="$CONTENTS/Java"
+
+if [ "$(uname -m)" = "arm64" ] && ! arch -x86_64 /usr/bin/true >/dev/null 2>&1; then
+	answer=$(/usr/bin/osascript \
+		-e 'display dialog "Tracker-Rust needs Rosetta 2, Apple'"'"'s translator for Intel apps: Tracker'"'"'s video library is made for Intel Macs only.\n\nInstall Rosetta now? (Your password is asked by macOS.)" buttons {"Cancel", "Install"} default button "Install" with title "Tracker-Rust" with icon note' \
+		-e 'button returned of result' 2>/dev/null)
+	[ "$answer" = "Install" ] || exit 1
+	/usr/bin/osascript -e 'do shell script "/usr/sbin/softwareupdate --install-rosetta --agree-to-license" with administrator privileges' >/dev/null 2>&1
+	if ! arch -x86_64 /usr/bin/true >/dev/null 2>&1; then
+		/usr/bin/osascript -e 'display alert "Rosetta 2 could not be installed." message "Install it in Terminal with:  softwareupdate --install-rosetta" as critical' >/dev/null 2>&1
+		exit 1
+	fi
+fi
+
+MEM="${TRACKER_MEMORY_MB:-}"
+if ! [[ "$MEM" =~ ^[0-9]+$ ]] || [ "$MEM" -lt 256 ]; then
+	bytes=$(/usr/sbin/sysctl -n hw.memsize 2>/dev/null || echo 4294967296)
+	MEM=$(( bytes / 2 / 1048576 ))
+	[ "$MEM" -lt 1024 ] && MEM=1024
+	[ "$MEM" -gt 16384 ] && MEM=16384
+fi
+
+# Finder adds -psn_... on old macOS versions; keep only real arguments (files)
+args=()
+for a in "$@"; do
+	case "$a" in -psn_*) ;; *) args+=("$a") ;; esac
+done
+
+cd "$HOME_DIR" || exit 1
+# Tracker relaunches itself with its own (1 GB) memory setting unless the
+# environment already matches; these make it keep this JVM and its heap.
+export TRACKER_HOME="$HOME_DIR"
+export XUGGLE_HOME="$HOME_DIR/Xuggle"
+export MEMORY_SIZE="$MEM"
+
+exec "$JAVA" \
+	-Xdock:name="Tracker-Rust" -Xdock:icon="$CONTENTS/Resources/Tracker-Rust.icns" \
+	-Dapple.awt.application.name="Tracker-Rust" \
+	-Xms64m -Xmx${MEM}m -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent \
+	-cp "tracker-native.jar:Xuggle/xuggle-xuggler-server-all.jar:Xuggle/slf4j-api.jar" \
+	org.opensourcephysics.cabrillo.tracker.Tracker "${args[@]}"

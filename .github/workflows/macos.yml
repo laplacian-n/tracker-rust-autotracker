@@ -1,0 +1,89 @@
+name: macOS build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tmnative/**"
+      - "java/src/**"
+      - "java/bench/**"
+      - "packaging/macos/**"
+      - ".github/workflows/macos.yml"
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    # Apple silicon runner: builds the Intel app and tests it through Rosetta 2, as on an M1
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add x86_64-apple-darwin
+
+      - name: Version
+        id: v
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then v="${GITHUB_REF_NAME#v}"; else v="dev-${GITHUB_SHA::7}"; fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+        run: bash packaging/macos/build-macos.sh
+
+      - name: Rosetta 2
+        run: /usr/sbin/softwareupdate --install-rosetta --agree-to-license || true
+
+      - name: Smoke test (Apple silicon, through Rosetta)
+        run: bash packaging/macos/smoke-test.sh build/macos/Tracker-Rust.app build/macos/bench
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tracker-Rust-macOS
+          path: build/macos/Tracker-Rust-${{ steps.v.outputs.version }}-macOS.dmg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bench-classes
+          path: build/macos/bench
+
+      - name: Attach to the release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" "build/macos/Tracker-Rust-${{ steps.v.outputs.version }}-macOS.dmg" --clobber
+
+  test-intel:
+    needs: build
+    runs-on: macos-15-intel
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: Tracker-Rust-macOS
+          path: dmg
+      - uses: actions/download-artifact@v4
+        with:
+          name: bench-classes
+          path: bench
+      - name: Install from the dmg, as a user would
+        run: |
+          hdiutil attach dmg/*.dmg -mountpoint /Volumes/TR -nobrowse
+          cp -R /Volumes/TR/Tracker-Rust.app "$RUNNER_TEMP/"
+          hdiutil detach /Volumes/TR
+      - name: Smoke test (Intel)
+        run: bash packaging/macos/smoke-test.sh "$RUNNER_TEMP/Tracker-Rust.app" bench

@@ -1,2 +1,5 @@
 *.pdf binary
 *.svg text eol=lf
+*.sh text eol=lf
+packaging/macos/Tracker-Rust text eol=lf
+*.yml text eol=lf
