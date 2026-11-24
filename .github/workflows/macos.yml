@@ -10,6 +10,11 @@ on:
       - "packaging/macos/**"
       - ".github/workflows/macos.yml"
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Attach the dmg to this existing release (e.g. v1.2.0); empty = artifact only"
+        required: false
+        default: ""
   release:
     types: [published]
 
@@ -36,8 +41,10 @@ jobs:
       - name: Version
         id: v
         run: |
-          if [ "${{ github.event_name }}" = "release" ]; then v="${GITHUB_REF_NAME#v}"; else v="dev-${GITHUB_SHA::7}"; fi
+          tag="${{ github.event_name == 'release' && github.ref_name || inputs.release_tag }}"
+          if [ -n "$tag" ]; then v="${tag#v}"; else v="dev-${GITHUB_SHA::7}"; fi
           echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
       - name: Build
         env:
@@ -61,10 +68,10 @@ jobs:
           path: build/macos/bench
 
       - name: Attach to the release
-        if: github.event_name == 'release'
+        if: steps.v.outputs.tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$GITHUB_REF_NAME" "build/macos/Tracker-Rust-${{ steps.v.outputs.version }}-macOS.dmg" --clobber
+        run: gh release upload "${{ steps.v.outputs.tag }}" "build/macos/Tracker-Rust-${{ steps.v.outputs.version }}-macOS.dmg" --clobber
 
   test-intel:
     needs: build
